@@ -1,68 +1,71 @@
-<script>
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://js.jotform.com/JotFormCustomWidget.js"></script>
+</head>
+<body>
+    <!-- El widget es invisible, no necesita HTML visible -->
+    <script>
+        JFCustomWidget.subscribe("ready", function() {
+            
+            // Esta función se ejecuta cuando el usuario intenta dar clic en "Enviar"
+            JFCustomWidget.subscribe("submit", function() {
+                
+                // IMPORTANTE: Para leer el valor de un campo FUERA del widget, 
+                // JotForm debe pasar el valor. Pero la forma más segura en un widget 
+                // es validar lo que el widget mismo contiene o envía.
+                
+                // Si el input_115_full está fuera del iframe, el widget no lo verá.
+                // RECOMENDACIÓN: Usa este script si vas a usar el código fuente completo.
+                
+                var cedulaInput = window.parent.document.getElementById("input_115_full");
+                var cedula = cedulaInput ? cedulaInput.value.trim() : "";
 
-// Cambia la lógica de captura para asegurar que el evento se detenga si hay error
-document.getElementById("261316732746661").onsubmit = function(e) {
-    var cedula = document.getElementById("input_115_full").value;
-    
-// Eliminar espacios
-        cedula = cedula.trim();
-		
-		if (error) {
-			alert("Mensaje de error");
-			e.preventDefault(); // Detiene el envío del formulario
-			return false;
-		}
+                var resultado = validarCedulaEcuatoriana(cedula);
 
-        // Validar longitud y solo números
-        if (!/^\d{10}$/.test(cedula)) {
-            alert("La cédula debe tener exactamente 10 números.");
-            return false;
-        }
-
-        // Validar provincia
-        var provincia = parseInt(cedula.substring(0, 2));
-
-        if (provincia < 1 || provincia > 24) {
-            alert("Código de provincia inválido.");
-            return false;
-        }
-
-        // Algoritmo de validación
-        var suma = 0;
-
-        for (var i = 0; i < 9; i++) {
-
-            var digito = parseInt(cedula.charAt(i));
-
-            if (i % 2 === 0) {
-                digito *= 2;
-
-                if (digito > 9) {
-                    digito -= 9;
+                if (resultado.error) {
+                    alert(resultado.mensaje);
+                    // JFCustomWidget.sendSubmit(null) detiene el envío
+                    JFCustomWidget.sendSubmit(null);
+                } else {
+                    // Si todo está bien, enviamos el valor al sistema de JotForm
+                    JFCustomWidget.sendSubmit({
+                        valid: true,
+                        value: cedula
+                    });
                 }
+            });
+        });
+
+        function validarCedulaEcuatoriana(cedula) {
+            if (!/^\d{10}$/.test(cedula)) {
+                return { error: true, mensaje: "La cédula debe tener exactamente 10 números." };
             }
 
-            suma += digito;
+            var provincia = parseInt(cedula.substring(0, 2));
+            if (provincia < 1 || provincia > 24) {
+                return { error: true, mensaje: "Código de provincia inválido." };
+            }
+
+            var suma = 0;
+            for (var i = 0; i < 9; i++) {
+                var digito = parseInt(cedula.charAt(i));
+                if (i % 2 === 0) {
+                    digito *= 2;
+                    if (digito > 9) digito -= 9;
+                }
+                suma += digito;
+            }
+
+            var digitoValidador = (Math.ceil(suma / 10) * 10) - suma;
+            if (digitoValidador === 10) digitoValidador = 0;
+
+            if (digitoValidador !== parseInt(cedula.charAt(9))) {
+                return { error: true, mensaje: "Cédula ecuatoriana inválida." };
+            }
+
+            return { error: false };
         }
-
-        var decenaSuperior = Math.ceil(suma / 10) * 10;
-        var digitoValidador = decenaSuperior - suma;
-
-        if (digitoValidador === 10) {
-            digitoValidador = 0;
-        }
-
-        var ultimoDigito = parseInt(cedula.charAt(9));
-
-        if (digitoValidador !== ultimoDigito) {
-            alert("Cédula ecuatoriana inválida.");
-            return false;
-        }
-		
-		
-        return true;
-
-    };
-
-
-</script>
+    </script>
+</body>
+</html>
