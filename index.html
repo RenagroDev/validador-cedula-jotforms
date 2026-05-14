@@ -6503,21 +6503,46 @@
       style="font-size: 0"
     ></div>
 
-    <!-- ... Final del código de JotForm ... -->
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const formId = "261333377009657"; // Tu ID de formulario
-    const inputCedula = document.getElementById("input_117_full");
-    const formulario = document.getElementById(formId);
 
-    // Función para mostrar/ocultar error con estilo JotForm
+  function esCedulaValida(cedula) {
+        if (!/^\d{10}$/.test(cedula)) return false;
+        const prov = parseInt(cedula.substring(0, 2));
+        if (prov < 1 || prov > 24) return false;
+        let suma = 0;
+        for (let i = 0; i < 9; i++) {
+            let d = parseInt(cedula.charAt(i));
+            if (i % 2 === 0) { d *= 2; if (d > 9) d -= 9; }
+            suma += d;
+        }
+        const verificador = (Math.ceil(suma / 10) * 10) - suma;
+        const ultimo = parseInt(cedula.charAt(9));
+        return (verificador === 10 ? 0 : verificador) === ultimo;
+    }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const inputCedula = document.getElementById("input_117_full");
+    
+    // Función para encontrar el botón de "Siguiente" más cercano
+    function gestionarBotonSiguiente(bloquear) {
+        // Buscamos el botón de la página actual
+        const botonSiguiente = inputCedula.closest(".form-section").querySelector(".form-pagebreak-next");
+        
+        if (botonSiguiente) {
+            botonSiguiente.disabled = bloquear;
+            // Estética: bajamos la opacidad si está bloqueado
+            botonSiguiente.style.opacity = bloquear ? "0.5" : "1";
+            botonSiguiente.style.cursor = bloquear ? "not-allowed" : "pointer";
+        }
+    }
+
     function gestionarErrorNativo(elemento, mensaje, mostrar) {
         const contenedorLinea = elemento.closest(".form-line");
+        gestionarBotonSiguiente(mostrar); // Bloquea si hay error, desbloquea si no
         
         if (mostrar) {
             contenedorLinea.classList.add("form-line-error");
-            // Crear el mensaje de error si no existe
             let errorDiv = contenedorLinea.querySelector(".form-error-message");
             if (!errorDiv) {
                 errorDiv = document.createElement("div");
@@ -6533,49 +6558,30 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Algoritmo Módulo 10
-    function esCedulaValida(cedula) {
-        if (!/^\d{10}$/.test(cedula)) return false;
-        const provincia = parseInt(cedula.substring(0, 2));
-        if (provincia < 1 || provincia > 24) return false;
-        
-        let suma = 0;
-        for (let i = 0; i < 9; i++) {
-            let d = parseInt(cedula.charAt(i));
-            if (i % 2 === 0) {
-                d *= 2;
-                if (d > 9) d -= 9;
-            }
-            suma += d;
-        }
-        const verificador = (Math.ceil(suma / 10) * 10) - suma;
-        const ultimo = parseInt(cedula.charAt(9));
-        return (verificador === 10 ? 0 : verificador) === ultimo;
-    }
+    
 
-    // Evento al cambiar el valor (cuando el usuario sale del campo)
-    inputCedula.addEventListener("change", function() {
+    // Escuchar mientras el usuario escribe (input) para bloquear rápido
+    inputCedula.addEventListener("input", function() {
         const valor = this.value.trim();
-        if (valor !== "" && !esCedulaValida(valor)) {
-            gestionarErrorNativo(inputCedula, "Cédula ecuatoriana inválida", true);
+        if (valor.length === 10) {
+            if (!esCedulaValida(valor)) {
+                gestionarErrorNativo(inputCedula, "Cédula inválida", true);
+            } else {
+                gestionarErrorNativo(inputCedula, "", false);
+            }
         } else {
-            gestionarErrorNativo(inputCedula, "", false);
+            // Si no tiene 10 dígitos, bloqueamos preventivamente el botón
+            gestionarBotonSiguiente(true);
         }
     });
 
-    // Validar al intentar enviar
-    if (formulario) {
-        formulario.onsubmit = function(e) {
-            const valor = inputCedula.value.trim();
-            if (!esCedulaValida(valor)) {
-                gestionarErrorNativo(inputCedula, "Cédula ecuatoriana inválida", true);
-                inputCedula.focus();
-                e.preventDefault();
-                return false;
-            }
-            return true;
-        };
-    }
+    // Validación final al salir del campo
+    inputCedula.addEventListener("change", function() {
+        const valor = this.value.trim();
+        if (valor === "" || !esCedulaValida(valor)) {
+            gestionarErrorNativo(inputCedula, "Cédula requerida y válida para continuar", true);
+        }
+    });
 });
 </script>
 </body>
