@@ -6565,7 +6565,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const valor = this.value.trim();
         if (valor.length === 10) {
             if (!esCedulaValida(valor)) {
-                gestionarErrorNativo(inputCedula, "Cédula inválida", true);
+                gestionarErrorNativo(inputCedula, "Cédula ecuatoriana incorrecta", true);
             } else {
                 gestionarErrorNativo(inputCedula, "", false);
             }
@@ -6579,7 +6579,7 @@ document.addEventListener("DOMContentLoaded", function() {
     inputCedula.addEventListener("change", function() {
         const valor = this.value.trim();
         if (valor === "" || !esCedulaValida(valor)) {
-            gestionarErrorNativo(inputCedula, "Cédula requerida y válida para continuar", true);
+            gestionarErrorNativo(inputCedula, "Cédula ecuatoriana incorrecta", true);
         }
     });
 });
