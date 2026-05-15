@@ -6522,40 +6522,9 @@
         return (verificador === 10 ? 0 : verificador) === ultimo;
     }
 
-    
-  //elimina tildes y caracteres especiales
-  document.addEventListener("input", function(event) {
-    // Verificamos si el elemento que disparó el evento tiene la clase
-    // que aparece al "Inspeccionar elemento"
-    if (event.target && event.target.matches(".multiple-text-input")) {
-        const input = event.target;
-        
-        // Guardamos la posición del cursor
-        const start = input.selectionStart;
-        const end = input.selectionEnd;
-
-        // REGEX: Bloquea tildes, puntos, comas y caracteres especiales.
-        // Solo permite letras A-Z, números y espacios.
-        // Si necesitas permitir la Ñ o tildes, agrégalas dentro del corchete.
-        const regex = /[^a-zA-Z0-9\s]/g;
-
-        if (regex.test(input.value)) {
-            // Reemplazamos lo prohibido
-            input.value = input.value.replace(regex, "");
-            
-            // Restauramos el cursor para que no salte al final
-            input.setSelectionRange(start - 1, end - 1);
-        }
-    }
-    }, true); // El parámetro 'true' ayuda a capturar eventos en elementos dinámicos
-
-document.addEventListener("DOMContentLoaded", function() {
-    
-    const inputCedula = document.getElementById("input_117_full");
-    
     // valida cedula y bloquea el boton siguiente si es incorrecta
 
-    function gestionarBotonSiguiente(bloquear) {
+  function gestionarBotonSiguiente(bloquear, inputCedula) {
         // Buscamos el botón de la página actual
         const botonSiguiente = inputCedula.closest(".form-section").querySelector(".form-pagebreak-next");
         
@@ -6565,11 +6534,11 @@ document.addEventListener("DOMContentLoaded", function() {
             botonSiguiente.style.opacity = bloquear ? "0.5" : "1";
             botonSiguiente.style.cursor = bloquear ? "not-allowed" : "pointer";
         }
-    }
+  }
 
-    function gestionarErrorNativo(elemento, mensaje, mostrar) {
+  function gestionarErrorNativo(elemento, mensaje, mostrar) {
         const contenedorLinea = elemento.closest(".form-line");
-        gestionarBotonSiguiente(mostrar); // Bloquea si hay error, desbloquea si no
+        gestionarBotonSiguiente(mostrar, inputCedula); // Bloquea si hay error, desbloquea si no
         
         if (mostrar) {
             contenedorLinea.classList.add("form-line-error");
@@ -6586,10 +6555,42 @@ document.addEventListener("DOMContentLoaded", function() {
             const errorDiv = contenedorLinea.querySelector(".form-error-message");
             if (errorDiv) errorDiv.style.display = "none";
         }
-    }
+  }
+    
+  function validarCedulaBeneficiario(){
+    const inputCedula = document.getElementById("input_341_full");
 
     
+    // Escuchar mientras el usuario escribe (input) para bloquear rápido
+    inputCedula.addEventListener("input", function() {
+        const valor = this.value.trim();
+        if (valor.length === 10) {
+            if (!esCedulaValida(valor)) {
+                gestionarErrorNativo(inputCedula, "Cédula ecuatoriana incorrecta", true);
+            } else {
+                gestionarErrorNativo(inputCedula, "", false);
+            }
+        } else {
+            // Si no tiene 10 dígitos, bloqueamos preventivamente el botón
+            gestionarBotonSiguiente(true, inputCedula);
+        }
+    });
 
+    // Validación final al salir del campo
+    inputCedula.addEventListener("change", function() {
+        const valor = this.value.trim();
+        if (valor === "" || !esCedulaValida(valor)) {
+            gestionarErrorNativo(inputCedula, "Cédula ecuatoriana incorrecta", true);
+        }
+    });
+    
+    
+   
+  }
+
+  function validarCedulaPersonal(){
+    const inputCedula = document.getElementById("input_117_full");
+    
     // Escuchar mientras el usuario escribe (input) para bloquear rápido
     inputCedula.addEventListener("input", function() {
         const valor = this.value.trim();
@@ -6612,10 +6613,15 @@ document.addEventListener("DOMContentLoaded", function() {
             gestionarErrorNativo(inputCedula, "Cédula ecuatoriana incorrecta", true);
         }
     });
+  }
+
+document.addEventListener("DOMContentLoaded", function() {
+   validarCedulaPersonal(); 
+   validarCedulaBeneficiario();
+    
 });
 </script>
 </body>
-  </body>
 </html>
 <script type="text/javascript">
   JotForm.ownerView = true;
