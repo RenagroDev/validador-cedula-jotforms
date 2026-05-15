@@ -6522,9 +6522,12 @@
         return (verificador === 10 ? 0 : verificador) === ultimo;
     }
 
+  function validarCedulaBeneficiario(){
+    const inputCedula = document.getElementById("input_341_full");
+    
     // valida cedula y bloquea el boton siguiente si es incorrecta
 
-  function gestionarBotonSiguiente(bloquear, inputCedula) {
+    function gestionarBotonSiguiente(bloquear) {
         // Buscamos el botón de la página actual
         const botonSiguiente = inputCedula.closest(".form-section").querySelector(".form-pagebreak-next");
         
@@ -6534,11 +6537,11 @@
             botonSiguiente.style.opacity = bloquear ? "0.5" : "1";
             botonSiguiente.style.cursor = bloquear ? "not-allowed" : "pointer";
         }
-  }
+    }
 
-  function gestionarErrorNativo(elemento, mensaje, mostrar) {
+    function gestionarErrorNativo(elemento, mensaje, mostrar) {
         const contenedorLinea = elemento.closest(".form-line");
-        gestionarBotonSiguiente(mostrar, inputCedula); // Bloquea si hay error, desbloquea si no
+        gestionarBotonSiguiente(mostrar); // Bloquea si hay error, desbloquea si no
         
         if (mostrar) {
             contenedorLinea.classList.add("form-line-error");
@@ -6555,12 +6558,8 @@
             const errorDiv = contenedorLinea.querySelector(".form-error-message");
             if (errorDiv) errorDiv.style.display = "none";
         }
-  }
-    
-  function validarCedulaBeneficiario(){
-    const inputCedula = document.getElementById("input_341_full");
-
-    
+    }
+   
     // Escuchar mientras el usuario escribe (input) para bloquear rápido
     inputCedula.addEventListener("input", function() {
         const valor = this.value.trim();
@@ -6572,7 +6571,7 @@
             }
         } else {
             // Si no tiene 10 dígitos, bloqueamos preventivamente el botón
-            gestionarBotonSiguiente(true, inputCedula);
+            gestionarBotonSiguiente(true);
         }
     });
 
@@ -6583,14 +6582,46 @@
             gestionarErrorNativo(inputCedula, "Cédula ecuatoriana incorrecta", true);
         }
     });
-    
-    
-   
   }
 
   function validarCedulaPersonal(){
     const inputCedula = document.getElementById("input_117_full");
     
+    // valida cedula y bloquea el boton siguiente si es incorrecta
+
+    function gestionarBotonSiguiente(bloquear) {
+        // Buscamos el botón de la página actual
+        const botonSiguiente = inputCedula.closest(".form-section").querySelector(".form-pagebreak-next");
+        
+        if (botonSiguiente) {
+            botonSiguiente.disabled = bloquear;
+            // Estética: bajamos la opacidad si está bloqueado
+            botonSiguiente.style.opacity = bloquear ? "0.5" : "1";
+            botonSiguiente.style.cursor = bloquear ? "not-allowed" : "pointer";
+        }
+    }
+
+    function gestionarErrorNativo(elemento, mensaje, mostrar) {
+        const contenedorLinea = elemento.closest(".form-line");
+        gestionarBotonSiguiente(mostrar); // Bloquea si hay error, desbloquea si no
+        
+        if (mostrar) {
+            contenedorLinea.classList.add("form-line-error");
+            let errorDiv = contenedorLinea.querySelector(".form-error-message");
+            if (!errorDiv) {
+                errorDiv = document.createElement("div");
+                errorDiv.className = "form-error-message";
+                contenedorLinea.appendChild(errorDiv);
+            }
+            errorDiv.innerHTML = '<span class="form-error-arrow"></span><div class="form-error-content">' + mensaje + '</div>';
+            errorDiv.style.display = "block";
+        } else {
+            contenedorLinea.classList.remove("form-line-error");
+            const errorDiv = contenedorLinea.querySelector(".form-error-message");
+            if (errorDiv) errorDiv.style.display = "none";
+        }
+    }
+   
     // Escuchar mientras el usuario escribe (input) para bloquear rápido
     inputCedula.addEventListener("input", function() {
         const valor = this.value.trim();
