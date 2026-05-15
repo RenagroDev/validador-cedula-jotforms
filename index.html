@@ -6506,6 +6506,7 @@
 
 <script>
 
+  
   function esCedulaValida(cedula) {
         if (!/^\d{10}$/.test(cedula)) return false;
         const prov = parseInt(cedula.substring(0, 2));
@@ -6522,9 +6523,37 @@
     }
 
 document.addEventListener("DOMContentLoaded", function() {
+
+    //elimina tildes y caracteres especiales
+
+    const camposEspeciales = document.querySelectorAll(".multiple-text-input.widget-text-input");
+    
+    camposEspeciales.forEach(input => {
+        // Evento 'input' captura escritura, pegado (paste) y borrado
+        input.addEventListener("input", function() {
+            // Guardamos la posición del cursor para que no "salte" al final al escribir
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            // REGEX: 
+            // [^a-zA-Z0-9\s] -> Busca todo lo que NO sea letras, números o espacios
+            // Si quieres quitar también los espacios, usa: /[^a-zA-Z0-9]/g
+            const regex = /[^a-zA-Z0-9\s]/g;
+
+            if (regex.test(this.value)) {
+                // Reemplazamos los caracteres prohibidos
+                this.value = this.value.replace(regex, "");
+                
+                // Restauramos la posición del cursor
+                this.setSelectionRange(start - 1, end - 1);
+            }
+        });
+    });
+
     const inputCedula = document.getElementById("input_117_full");
     
-    // Función para encontrar el botón de "Siguiente" más cercano
+    // valida cedula y bloquea el boton siguiente si es incorrecta
+
     function gestionarBotonSiguiente(bloquear) {
         // Buscamos el botón de la página actual
         const botonSiguiente = inputCedula.closest(".form-section").querySelector(".form-pagebreak-next");
