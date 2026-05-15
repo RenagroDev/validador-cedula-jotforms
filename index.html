@@ -1538,15 +1538,11 @@ JotForm.paymentExtrasOnTheFly([null,{"name":"heading","qid":"1","text":"Formular
             botonSiguiente.disabled = bloquear;
 
             if (bloquear) {
-                // 2. Bloqueo físico de clics (FALTA DE INTERACCIÓN TOTAL)
-                botonSiguiente.style.pointerEvents = "none";
-                
-                // 3. Ocultamiento visual absoluto (Corregido .style)
+                botonSiguiente.style.visibility = "hidden";                
                 botonSiguiente.style.opacity = "0"; 
                 botonSiguiente.style.cursor = "not-allowed";
             } else {
                 // Restaurar estado activo
-                botonSiguiente.style.pointerEvents = "auto";
                 botonSiguiente.style.visibility = "visible";
                 botonSiguiente.style.opacity = "1";
                 botonSiguiente.style.cursor = "pointer";
