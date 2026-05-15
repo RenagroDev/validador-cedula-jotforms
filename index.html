@@ -1536,7 +1536,7 @@ JotForm.paymentExtrasOnTheFly([null,{"name":"heading","qid":"1","text":"Formular
         
         if (botonSiguiente) {
             botonSiguiente.disabled = bloquear;
-            botonSiguiente.visibility = bloquear ? "hidden" : "visible";
+            botonSiguiente.style.pointerEvents = "none";
             // Estética: bajamos la opacidad si está bloqueado
             botonSiguiente.style.opacity = bloquear ? "0.5" : "1";
             botonSiguiente.style.cursor = bloquear ? "not-allowed" : "pointer";
