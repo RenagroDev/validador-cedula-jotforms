@@ -6522,11 +6522,9 @@
         return (verificador === 10 ? 0 : verificador) === ultimo;
     }
 
-document.addEventListener("DOMContentLoaded", function() {
-
-    //elimina tildes y caracteres especiales
     
-    document.addEventListener("input", function(event) {
+  //elimina tildes y caracteres especiales
+  document.addEventListener("input", function(event) {
     // Verificamos si el elemento que disparó el evento tiene la clase
     // que aparece al "Inspeccionar elemento"
     if (event.target && event.target.matches(".multiple-text-input")) {
@@ -6551,7 +6549,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     }, true); // El parámetro 'true' ayuda a capturar eventos en elementos dinámicos
 
-
+document.addEventListener("DOMContentLoaded", function() {
+    
     const inputCedula = document.getElementById("input_117_full");
     
     // valida cedula y bloquea el boton siguiente si es incorrecta
