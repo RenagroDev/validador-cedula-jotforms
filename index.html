@@ -6525,29 +6525,29 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     //elimina tildes y caracteres especiales
-
-    const camposEspeciales = document.querySelectorAll(".multiple-text-input.widget-text-input");
     
-    camposEspeciales.forEach(input => {
-        // Evento 'input' captura escritura, pegado (paste) y borrado
-        input.addEventListener("input", function() {
-            // Guardamos la posición del cursor para que no "salte" al final al escribir
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
+    document.addEventListener("input", function(event) {
+        
+        // Verificamos si el elemento que disparó el evento tiene la clase de tus campos
+        if (event.target && event.target.classList.contains("multiple-text-input")) {
+            const input = event.target;
+            
+            // Guardamos posición del cursor
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
 
-            // REGEX: 
-            // [^a-zA-Z0-9\s] -> Busca todo lo que NO sea letras, números o espacios
-            // Si quieres quitar también los espacios, usa: /[^a-zA-Z0-9]/g
+            // Regex: Bloquea todo lo que NO sea letras de la A-Z o números
+            // Nota: No incluimos \s si quieres bloquear espacios en estos nombres
             const regex = /[^a-zA-Z0-9\s]/g;
 
-            if (regex.test(this.value)) {
-                // Reemplazamos los caracteres prohibidos
-                this.value = this.value.replace(regex, "");
+            if (regex.test(input.value)) {
+                // Reemplazamos caracteres prohibidos (tildes, puntos, comas, etc)
+                input.value = input.value.replace(regex, "");
                 
-                // Restauramos la posición del cursor
-                this.setSelectionRange(start - 1, end - 1);
+                // Restauramos la posición del cursor para evitar saltos molestos
+                input.setSelectionRange(start - 1, end - 1);
             }
-        });
+        }
     });
 
     const inputCedula = document.getElementById("input_117_full");
